@@ -11,8 +11,8 @@
 #include <iostream>
 #include <fstream>
 #include "bppair.h"
-#define PAIR_IN_LEAF_TRAIN 1
-#define KEY_IN_INTER_TRAIN 80
+#define PAIR_IN_LEAF_TRAIN 10
+#define KEY_IN_INTER_TRAIN 100
 #define LEAST_PAIR_IN_LEAF_TRAIN (PAIR_IN_LEAF_TRAIN / 2 + 0.999)
 #define LEAST_KEY_IN_INTER_TRAIN (KEY_IN_INTER_TRAIN / 2 + 0.999)
 using namespace tool;
