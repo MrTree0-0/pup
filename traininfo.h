@@ -81,7 +81,7 @@ std::ostream &operator<< (std::ostream &out, train_info &info1){
     out << std::endl;
     for(int i = 0; i < info1.num_station; i++){
         out << info1.trainStation[i].station_name << " " <<info1.trainStation[i].arrival_time << " " << info1.trainStation[i].leave_time << " " << info1.trainStation[i].gap_time;
-        for(int j = 0; j < info1.num_ticket; j++) out << " ¥" << info1.trainStation[i].money[j];
+        for(int j = 0; j < info1.num_ticket; j++) out << " ￥" << info1.trainStation[i].money[j];
         out << std::endl;
     }
     return out;
