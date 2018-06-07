@@ -1,12 +1,13 @@
 //
-// Created by 金乐盛 on 2018/6/4.
+// Created by 金乐盛 on 2018/6/2.
 //
 
-#ifndef TRAIN_BPLUSTREEFORTRAIN_H
-#define TRAIN_BPLUSTREEFORTRAIN_H
+#ifndef TRAINANDTICKET_BFORTRAIN_H
+#define TRAINANDTICKET_BFORTRAIN_H
 //
 // Created by 金乐盛 on 2018/5/12.
 //
+
 #include <iostream>
 #include <fstream>
 #include <stddef.h>
@@ -23,10 +24,10 @@
 //#define debug "jadkjf"
 //using namespace std;
 using namespace tool;
-namespace train_system{
+namespace bptfortrain{
 //template <class Key, class Value, class Compare =  std::less<Key>>
 template <class Key, class Value>
-class bplustree{
+class bplusfortraintree{
 
   public:
     bpt_meta meta{};
@@ -34,7 +35,7 @@ class bplustree{
     mychar path;//the path to the file
 
 
-    bplustree(const char *filename = ""){
+    bplusfortraintree(const char *filename = ""){
         path.add(filename);
         fp = nullptr;
     }
@@ -94,11 +95,6 @@ class bplustree{
             fclose(fp);
         }
         fp_level = 0;
-    }
-
-    void printsize(){
-        std::cout << "the size of leaf " << sizeof(leaf_node<Key, Value>) << " so there are " <<  (4 * 1024) / sizeof(leaf_node<Key, Value>) << std::endl;
-        std::cout << "the size of node " << sizeof(internal_node<Key, Value>)  << " so there are " << (4 * 1024) / sizeof(internal_node<Key, Value>) << std::endl;
     }
 
     void print_the_leaf(long offset_leaf, int num){
@@ -292,12 +288,12 @@ class bplustree{
 
   private:
 
-    int cmp(Key a, Key b){
-        if(a < b){//a < b
-            return 1;
-        }
-        if(a > b){//a > b
+    int cmp(const Key &a, const Key &b){
+        if(a > b){
             return -1;
+        }
+        if(a < b){
+            return 1;
         }
         else return 0;//==
     }
@@ -360,9 +356,9 @@ class bplustree{
 
 
     //search in the leaf for which pair, if there is not such pair then goto the first pair which key is smaller than it
-    int leaf_binary_search(const pair<Key, Value> p[], int l, int r, Key key){
+    int leaf_binary_search(const pair<Key, Value> p[], int l, int r,const Key &key){
         int ans = 0;
-        if(cmp(p[l].first, p[r].first) == -1){
+        if(l > r){
             return -1;
         }
         if(cmp(p[r].first , key) != -1){
@@ -384,9 +380,9 @@ class bplustree{
 
 
     //search in the internal key for which pair, if there is not such pair then goto the first pair which key is smaller than it
-    int node_binary_search(const pair<Key, long> p[], int l, int r, Key key){
+    int node_binary_search(const pair<Key, long> p[], int l, int r,const Key &key){
         int ans = 0;
-        if(cmp(p[l].first, p[r].first) == -1){
+        if(l > r){
             return 0;
         }
         if(cmp(p[r].first , key) != -1){
@@ -814,7 +810,7 @@ class bplustree{
         node.index[x + 1].first = key;
         node.index[x + 1].second = offset;
         node.numOfkey++;//把东西插入node
-        if(node.numOfkey == KEY_IN_INTER_TRAIN){
+        if(node.numOfkey == KEY_IN_INTER){
             spilt_inter(node);//分裂node
         }
         else{
@@ -993,4 +989,4 @@ class bplustree{
 };
 }
 
-#endif //TRAIN_BPLUSTREEFORTRAIN_H
+#endif //TRAINANDTICKET_BFORTRAIN_H

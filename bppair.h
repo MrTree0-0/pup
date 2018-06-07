@@ -60,6 +60,7 @@ class mychar{
         for(int i = 0; i < LENGTH_CHAR; i++){
             this->ch[i] = '\0';
         }
+        length = 0;
     }
 
     void add(const char c[]){
@@ -73,14 +74,14 @@ class mychar{
         for(int i = 0; i < l; i++){
             ch[length + i] = c[i];
         }
-        length = l;
+        length += l;
     }
 
     void add(const mychar &c){
         for(int i = 0; i < c.length; i++){
             ch[length + i] = c.ch[i];
         }
-        length = c.length;
+        length += c.length;
     }
 
 

@@ -4,32 +4,25 @@
 
 #ifndef TRAINANDTICKET_TRAININFO_H
 #define TRAINANDTICKET_TRAININFO_H
+#define MAX_STATION_NUM 60
+#define MAX_TICKET_KIND 5
 #include <utility>
-
 #include "bppair.h"
 #include "hour_minute.h"
 #include "money.h"
-#define MAX_TICKET_KIND 5
-#define MAX_STATION_NUM 60
+#include "stationinfo.h"
 using namespace bpt;
 namespace train_system{
-class train_station{
+/*class train_station{
   public:
-    mychar station_name;
-    tool::hour_minute arrival_time;
-    tool::hour_minute leave_time;
-    tool::hour_minute gap_time;
-    tool::money money[MAX_TICKET_KIND];
     int num_of_ticket[MAX_TICKET_KIND];
-
-    train_station(const char* name = "")
-    :station_name(name)
+    train_station()
     {
         for(int j = 0; j < MAX_TICKET_KIND; j++){
             num_of_ticket[j] = 2000;
         }
     }
-};
+};*/
 
 class train_info{
   public:
@@ -40,14 +33,20 @@ class train_info{
     int num_station;
     int num_ticket;
     mychar ticket_name[MAX_TICKET_KIND];
-    train_station trainStation[MAX_STATION_NUM];
+    int ticket_num[MAX_STATION_NUM][MAX_TICKET_KIND];
+    long offset_stationinfo;
 
 
-    explicit train_info(const char *id = "",int date0 = 0, const char *name = "", const char* catalog = "", int station = 0, int ticket = 0)
-        :train_id(id), train_name(name), train_catalog(catalog), num_station(station), num_ticket(ticket){
+    explicit train_info(const char *id = "", const char *name = "", const char* catalog = "", int station = 0, int ticket = 0, long offset = 0)
+        :train_id(id), train_name(name), train_catalog(catalog), num_station(station), num_ticket(ticket), offset_stationinfo(offset){
         sell_or_not = false;
-
+        for(int i = 0; i < MAX_STATION_NUM; i++){
+            for(int j = 0; j < MAX_TICKET_KIND; j++){
+                ticket_num[i][j] = 2000;
+            }
+        }
     }
+
     train_info(const train_info &info0){
         train_id.init(info0.train_id.ch);
         train_name.init(info0.train_name.ch);
@@ -55,49 +54,70 @@ class train_info{
         sell_or_not = info0.sell_or_not;
         num_station = info0.num_station;
         num_ticket = info0.num_ticket;
+        offset_stationinfo = info0.offset_stationinfo;
         for(int i = 0; i < info0.num_ticket; i++){
             ticket_name[i].init(info0.ticket_name[i].ch);
         }
         for(int i = 0; i < info0.num_station; i++){
-            trainStation[i].station_name.init(info0.trainStation[i].station_name.ch);
+            /*trainStation[i].station_name.init(info0.trainStation[i].station_name.ch);
             trainStation[i].arrival_time = info0.trainStation[i].arrival_time;
             trainStation[i].leave_time = info0.trainStation[i].leave_time;
-            trainStation[i].gap_time = info0.trainStation[i].gap_time;
+            trainStation[i].gap_time = info0.trainStation[i].gap_time;*/
             for(int j = 0; j < info0.num_ticket; j++){
-                trainStation[i].num_of_ticket[j] = info0.trainStation[i].num_of_ticket[j];
-                trainStation[i].money[j] = info0.trainStation[i].money[j];
+                ticket_num[i][j] = info0.ticket_num[i][j];
             }
         }
     }
 
+    train_info &operator=(const train_info &info0){
+        train_id.init(info0.train_id.ch);
+        train_name.init(info0.train_name.ch);
+        train_catalog.init(info0.train_catalog.ch);
+        sell_or_not = info0.sell_or_not;
+        num_station = info0.num_station;
+        num_ticket = info0.num_ticket;
+        offset_stationinfo = info0.offset_stationinfo;
+        for(int i = 0; i < info0.num_ticket; i++){
+            ticket_name[i].init(info0.ticket_name[i].ch);
+        }
+        for(int i = 0; i < info0.num_station; i++){
+            /*trainStation[i].station_name.init(info0.trainStation[i].station_name.ch);
+            trainStation[i].arrival_time = info0.trainStation[i].arrival_time;
+            trainStation[i].leave_time = info0.trainStation[i].leave_time;
+            trainStation[i].gap_time = info0.trainStation[i].gap_time;*/
+            for(int j = 0; j < info0.num_ticket; j++){
+                ticket_num[i][j] = info0.ticket_num[i][j];
+            }
+        }
+        return *this;
+    }
 };
 
 
-std::ostream &operator<< (std::ostream &out, train_info &info1){
+/*std::ostream &operator<< (std::ostream &out, train_info &info1){
     out << info1.train_id << " " << info1.train_name << " " <<  info1.train_catalog << " " << info1.num_station << " " << info1.num_ticket;
     for(int i = 0; i < info1.num_ticket; i++){
         out << " " << info1.ticket_name[i];
     }
     out << std::endl;
     for(int i = 0; i < info1.num_station; i++){
-        out << info1.trainStation[i].station_name << " " <<info1.trainStation[i].arrival_time << " " << info1.trainStation[i].leave_time << " " << info1.trainStation[i].gap_time;
-        for(int j = 0; j < info1.num_ticket; j++) out << " ￥" << info1.trainStation[i].money[j];
+        out << inf
+        for(int j = 0; j < info1.num_ticket; j++)
         out << std::endl;
     }
     return out;
 }
-std::istream &operator >> (std::istream &in, train_info &info1){
+std::istream &operator>> (std::istream &in, train_info &info1){
     in >> info1.train_id >> info1.train_name >> info1.train_catalog >> info1.num_station >> info1.num_ticket;
     for(int i = 0; i < info1.num_ticket; i++){
         in >> info1.ticket_name[i];
     }
     for(int i = 0; i < info1.num_station; i++){
         char ch;
-        in >> info1.trainStation[i].station_name >> info1.trainStation[i].arrival_time >> info1.trainStation[i].leave_time >> info1.trainStation[i].gap_time;
-        for(int j = 0; j < info1.num_ticket; j++) in >> ch >> ch >> ch >> info1.trainStation[i].money[j];// cout << info1.trainStation[i].money[j];
+        for(int j = 0; j < info1.num_ticket; j++) in >> ch >> ch >> ch >> info1.ticket_num[i][j];// cout << info1.trainStation[i].money[j];
     }
     return in;
-}
+}*/
 
 class train_key{
   public:
@@ -115,6 +135,12 @@ class train_key{
     train_key(const train_key &key){
         train_id.init(key.train_id.ch);
         date = key.date;
+    }
+
+    train_key &operator=(const train_key &key){
+        train_id.init(key.train_id.ch);
+        date = key.date;
+        return *this;
     }
 
 
