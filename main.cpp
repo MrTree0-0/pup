@@ -104,6 +104,126 @@ void print_size(){
     cout << "the size of ticket:" << endl;
     tree_ticket.printsize();
 }
+
+bool query_train(mychar loc1, mychar loc2, int date, mychar catalog){
+    station_system::station_key stationTrain(loc1.ch);
+    station_system::station_key stationTrain2(loc2.ch);
+    station_system::station_key trainlist1[800];
+    station_system::station_key trainlist2[800];
+    tool::pair<mychar, int> train_inner_info1[800];
+    tool::pair<mychar, int> train_inner_info2[800];
+    int num1 = 0;
+    int num2 = 0;
+    tree_station.find(stationTrain, trainlist1, train_inner_info1, num1);
+    tree_station.find(stationTrain2, trainlist2, train_inner_info2, num2);
+    mychar trainid[800];
+    int pos_of_loc1[800];
+    int pos_of_loc2[800];
+    mychar catalog_train[800];
+    int cnt = 0;
+    for(int i = 0; i < num1; i++){
+        for(int j = 0; j < num2; j++){
+            if(trainlist1[i].train_id == trainlist2[j].train_id) {
+                trainid[cnt] = trainlist1[i].train_id;
+
+                catalog_train[cnt].init(train_inner_info1[i].first.ch);
+
+                pos_of_loc1[cnt] = train_inner_info1[i].second;
+
+                pos_of_loc2[cnt] = train_inner_info2[j].second;
+
+                cnt++;
+            }
+        }
+    }
+    int n = cnt;
+    //cout << "here1" << cnt << endl;
+    for(int i = 0; i < cnt; i++){
+        if(!catalog.contain(catalog_train[i].ch)) {
+            continue;
+        }
+        /*for(int j = 0; j < info_i.num_station; j++){
+            if(info_i.trainStation[j].station_name == loc1) {
+                pos_of_loc1 = j;
+            }
+            if(info_i.trainStation[j].station_name == loc2) {
+                pos_of_loc2 = j;
+            }
+        }*/
+        if(pos_of_loc1[i] > pos_of_loc2[i]) {
+            n--;
+            continue;
+        }
+    }
+    if(n <= 0){
+        return false;
+    }
+    for(int i = 0; i < cnt; i++){
+        if(!catalog.contain(catalog_train[i].ch)) {
+            continue;
+        }
+        if(pos_of_loc1[i] > pos_of_loc2[i]) {
+            continue;
+        }
+        train_system::train_key key_i(trainid[i].ch, date);
+        //cout << "here1" << endl;
+        train_system::train_info info_i = tree_train.find(key_i).first;
+        station_system::station_info stationInfo[MAX_STATION_NUM];
+        list_station.readvalue(info_i.offset_stationinfo, stationInfo, info_i.num_station);
+        //
+        //if(trainid[i] == "9y000K979201") continue;
+        /*if(!catalog.contain(info_i.train_catalog.ch)) {
+            continue;
+        }*/
+        //int pos_of_loc1 = 0;
+        //int pos_of_loc2 = 0;
+        int pos_of_day = 0;
+        tool::hour_minute leavetime;
+        tool::hour_minute arrivetime;
+        for(int j = 0; j < info_i.num_station; j++){
+            if(stationInfo[j].station_name == loc1) {
+                //pos_of_loc1 = j;
+                leavetime = stationInfo[j].leave_time;
+            }
+            if(j == 0 || stationInfo[j].arrival_time < stationInfo[j - 1].arrival_time){
+                pos_of_day = j;
+            }
+            if(stationInfo[j].station_name == loc2) {
+                arrivetime = stationInfo[j].arrival_time;
+                //pos_of_loc2 = j;
+            }
+        }
+        ticket_system::ticket_info buy_info;
+        for(int j = 0; j < info_i.num_ticket; j++){
+            buy_info.ticket_name[j].init(info_i.ticket_name[j].ch);
+        }
+        for(int pos = pos_of_loc1[i] + 1; pos <= pos_of_loc2[i]; pos++){
+            for(int j = 0; j < info_i.num_ticket; j++){//对每一站第j票对价钱做总和
+                buy_info.ticket_money[j].price += stationInfo[pos].money[j].price;
+                //cout << buy_info.ticket_money[j].price << endl;
+            }
+        }
+        for(int pos = pos_of_loc1[i]; pos < pos_of_loc2[i]; pos++){
+            for(int j = 0; j < info_i.num_ticket; j++) {
+                //cout << info_i.trainStation[pos].num_of_ticket[j] << endl;
+                if(pos == pos_of_loc1[i]){
+                    buy_info.ticket_num[j] = info_i.ticket_num[pos][j];
+                }
+                else buy_info.ticket_num[j] = min(buy_info.ticket_num[j], info_i.ticket_num[pos][j]);
+            }
+        }
+        mychar chardate;
+        chardate.init(changeint(date).ch);
+        cout << info_i.train_id << " " << loc1 << " " << chardate << " " << leavetime << " " << loc2 << " " << chardate << " " << arrivetime;
+        for(int j = 0; j < info_i.num_ticket; j++){
+            cout << " " << buy_info.ticket_name[j] << " " << buy_info.ticket_num[j] << " " << buy_info.ticket_money[j];
+        }
+        cout << endl;
+
+    }
+    return true;
+}
+
 int main() {
     //bpt::bpt<> tree_train();
     //bpt::bpt<> tree_ticket();
@@ -682,10 +802,6 @@ int main() {
             int n = cnt;
             //cout << "here1" << cnt << endl;
             for(int i = 0; i < cnt; i++){
-                //train_system::train_key key_i(trainid[i].ch, date_num);
-                //cout << "here1" << endl;
-                //train_system::train_info info_i = tree_train.find(key_i).first;
-                //
                 if(!catalog.contain(catalog_train[i].ch)) {
                     n--;
                     continue;
@@ -720,19 +836,11 @@ int main() {
                 train_system::train_info info_i = tree_train.find(key_i).first;
                 station_system::station_info stationInfo[MAX_STATION_NUM];
                 list_station.readvalue(info_i.offset_stationinfo, stationInfo, info_i.num_station);
-                //
-                //if(trainid[i] == "9y000K979201") continue;
-                /*if(!catalog.contain(info_i.train_catalog.ch)) {
-                    continue;
-                }*/
-                //int pos_of_loc1 = 0;
-                //int pos_of_loc2 = 0;
                 int pos_of_day = 0;
                 tool::hour_minute leavetime;
                 tool::hour_minute arrivetime;
                 for(int j = 0; j < info_i.num_station; j++){
                     if(stationInfo[j].station_name == loc1) {
-                        //pos_of_loc1 = j;
                         leavetime = stationInfo[j].leave_time;
                     }
                     if(j == 0 || stationInfo[j].arrival_time < stationInfo[j - 1].arrival_time){
@@ -740,19 +848,14 @@ int main() {
                     }
                     if(stationInfo[j].station_name == loc2) {
                         arrivetime = stationInfo[j].arrival_time;
-                        //pos_of_loc2 = j;
                     }
                 }
-                /*if(pos_of_loc1[i] > pos_of_loc2[i]) {
-                    continue;
-                }*/
-                //cout << pos_of_day << "  asd" << endl;
 
                 ticket_system::ticket_info buy_info;
                 for(int j = 0; j < info_i.num_ticket; j++){
                     buy_info.ticket_name[j].init(info_i.ticket_name[j].ch);
                 }
-                //cout << pos_of_day << endl;
+
                 if(pos_of_day != 0)
                 {//车已经是第二天的了
                     if(pos_of_loc1[i] >= pos_of_day){//前面的那站跑出去，两站都在第二天
@@ -871,14 +974,66 @@ int main() {
         if(cmd == "query_transfer"){
             mychar loc1, loc2, date, catalog;
             cin >> loc1 >> loc2 >> date >> catalog;
-            if(loc1 == "长春") {
+            /*if(loc1 == "长春") {
                 cout << "11000C100102 长春 2018-06-01 05:47 延吉西 2018-06-01 08:04 硬卧 2000 2845.13 软卧 2000 6219.29" << '\n';
                 cout << "1c000C100205 延吉西 2018-06-01 16:07 安图西 2018-06-01 16:26 软座 2000 2068.36 软卧 2000 1165.01" << '\n';
             }
             else {
                 cout << -1 << '\n';
+            }*/
+            station_system::station_key stationTrain(loc2.ch);
+            station_system::station_key trainlist[800];
+            tool::pair<mychar, int> train_inner_info[800];
+            int num = 0;
+            int datenum = changedate(date);
+            tree_station.find(stationTrain, trainlist, train_inner_info, num);
+            for(int i = 0; i < num; i++){
+                train_system::train_key key_i(trainlist[i].train_id.ch, datenum);
+                train_system::train_info info_i = tree_train.find(key_i).first;
+                station_system::station_info stationInfo[MAX_STATION_NUM];
+                list_station.readvalue(info_i.offset_stationinfo, stationInfo, info_i.num_station);
+                tool::hour_minute leavetime;
+                tool::hour_minute arrivetime;
+                int pos_of_loc2 = 0;
+                for(int j = 0; j < info_i.num_station; j++){
+                    if(query_train(loc1, stationInfo[i].station_name, datenum, catalog)){
+
+                    }
+                    if(stationInfo[j].station_name == loc2) {
+                        arrivetime = stationInfo[j].arrival_time;
+                        break;
+                    }
+                }
+                ticket_system::ticket_info buy_info;
+                for(int j = 0; j < info_i.num_ticket; j++){
+                    buy_info.ticket_name[j].init(info_i.ticket_name[j].ch);
+                }
+                for(int pos = 0; pos <= pos_of_loc2; pos++){
+                    for(int j = 0; j < info_i.num_ticket; j++){//对每一站第j票对价钱做总和
+                        buy_info.ticket_money[j].price += stationInfo[pos].money[j].price;
+                        //cout << buy_info.ticket_money[j].price << endl;
+                    }
+                }
+                for(int pos = 0; pos < pos_of_loc2; pos++){
+                    for(int j = 0; j < info_i.num_ticket; j++) {
+                        //cout << info_i.trainStation[pos].num_of_ticket[j] << endl;
+                        if(pos == 0){
+                            buy_info.ticket_num[j] = info_i.ticket_num[pos][j];
+                        }
+                        else buy_info.ticket_num[j] = min(buy_info.ticket_num[j], info_i.ticket_num[pos][j]);
+                    }
+                }
+                mychar chardate;
+                chardate.init(changeint(datenum).ch);
+                cout << info_i.train_id << " " << loc1 << " " << chardate << " " << leavetime << " " << loc2 << " " << chardate << " " << arrivetime;
+                for(int j = 0; j < info_i.num_ticket; j++){
+                    cout << " " << buy_info.ticket_name[j] << " " << buy_info.ticket_num[j] << " " << buy_info.ticket_money[j];
+                }
+                cout << endl;
             }
 
+
+                query_train(loc1, loc2, datenum, catalog);
         }else
         if(cmd == "exit"){
             cout << "BYE" << '\n';
