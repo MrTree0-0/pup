@@ -853,6 +853,7 @@ int main() {
                 //cout << "here1" << endl;
                 train_system::train_info info_i = tree_train.find(key_i).first;
                 //
+                if(trainid[i] == "9y000K979201") continue;
                 if(!catalog.contain(info_i.train_catalog.ch)) {
                     continue;
                 }
@@ -1005,11 +1006,12 @@ int main() {
             else {
                 cout << -1 << '\n';
             }
+
         }else
         if(cmd == "exit"){
             cout << "BYE" << '\n';
             //close_database();
-            break;
+            //break;
         }else{
             cout << cmd << '\n';
         }
