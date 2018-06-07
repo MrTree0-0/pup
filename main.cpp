@@ -792,7 +792,7 @@ int main() {
             tree_station.find(stationTrain2, trainlist2, waste2, num2);
             //cout << num2 << endl;
             //int i1 = 0 , i2 = 0;
-            mychar trainid[200];
+            mychar trainid[800];
             int cnt = 0;
             /*while(i1 != num1 && i2 != num2){
                 while(trainlist1[i1] > trainlist2[i2]){
@@ -853,7 +853,7 @@ int main() {
                 //cout << "here1" << endl;
                 train_system::train_info info_i = tree_train.find(key_i).first;
                 //
-                if(trainid[i] == "9y000K979201") continue;
+                //if(trainid[i] == "9y000K979201") continue;
                 if(!catalog.contain(info_i.train_catalog.ch)) {
                     continue;
                 }
@@ -1011,7 +1011,7 @@ int main() {
         if(cmd == "exit"){
             cout << "BYE" << '\n';
             //close_database();
-            //break;
+            break;
         }else{
             cout << cmd << '\n';
         }
