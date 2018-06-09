@@ -1020,7 +1020,7 @@ int main() {
                 }
             }
             if(flag == false){
-                cout << 0 << endl;
+                cout << -1 << endl;
                 continue;
             }
             ticket_system::ticket_info buy_info1;
