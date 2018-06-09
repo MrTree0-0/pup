@@ -11,7 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include "bppair.h"
-#define PAIR_IN_LEAF_TICKET 9
+#define PAIR_IN_LEAF_TICKET 8
 #define KEY_IN_INTER_TICKET 20
 #define LEAST_PAIR_IN_LEAF_TICKET (PAIR_IN_LEAF_TICKET / 2 + 0.999)
 #define LEAST_KEY_IN_INTER_TICKET (KEY_IN_INTER_TICKET / 2 + 0.999)

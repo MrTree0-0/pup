@@ -11,7 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include "bppair.h"
-#define PAIR_IN_LEAF_STATION 51
+#define PAIR_IN_LEAF_STATION 35
 #define KEY_IN_INTER_STATION 49
 #define LEAST_PAIR_IN_LEAF_STATION (PAIR_IN_LEAF_STATION / 2 + 0.999)
 #define LEAST_KEY_IN_INTER_STATION (KEY_IN_INTER_STATION / 2 + 0.999)
