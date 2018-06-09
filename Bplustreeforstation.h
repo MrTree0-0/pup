@@ -314,6 +314,7 @@ class bplustree{
                         break;
                     }
                 }
+                if(leaf.next == 0 && found == false) return 0;
                 if(found == false) readfile(&leaf, leaf.next, 1, sizeof(leaf_node<Key, Value>));
                 else break;
             }

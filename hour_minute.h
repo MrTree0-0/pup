@@ -14,6 +14,7 @@ class hour_minute{
     friend bool operator>(const hour_minute &h1, const hour_minute &h2);
     friend bool operator==(const hour_minute &h1, const hour_minute &h2);
     friend bool operator<(const hour_minute &h1, const hour_minute &h2);
+    friend int operator-(const hour_minute &h1, const hour_minute &h2);
   private:
     pair<int ,int> clock;
 
@@ -35,6 +36,10 @@ bool operator>(const hour_minute &h1, const hour_minute &h2){
     if(h1.clock.first < h2.clock.first) return false;
     if(h1.clock.second > h2.clock.second) return true;
     else return false;
+}
+
+int operator-(const hour_minute &h1, const hour_minute &h2){
+    return (h1.clock.first - h2.clock.second) * 60 + h1.clock.second - h2.clock.second;
 }
 
 bool operator==(const hour_minute &h1, const hour_minute &h2){
