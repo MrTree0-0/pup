@@ -208,7 +208,7 @@ int main() {
     cin.tie(0);
     cout.tie(0);
     mychar cmd;
-    print_size();
+    //print_size();
     while(cin >> cmd){
         if(cmd == "register"){
             mychar name, password, email, phone;
